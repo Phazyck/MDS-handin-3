@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cal><users><user><name> Raghava Rao Mukkamala </name><password>lab</password></user><user><name> Thomas Hildebrandt</name><password>teach</password></user><user><name> Teaching Assistant No:1 </name><password>help</password></user><user><name> Student No:1 </name><password>study</password></user></users><tasks><task status="executed" date="03-09-2012" name="teach lect 01" id="tch-01"><description>
+                Teaching on  Distributed Systems and System Model 
+            </description><attendants>hilde</attendants></task><task status="not-executed" date="03-09-2012" name="lab exercises 01" id="lab-01"><description>
+                Lab exercises for 1st week. 
+            </description><attendants>rao</attendants></task><task status="not-executed" date="17-09-2012" name="mandatory assignment 01" id="assn-01"><description>
+                Work out mandatory assignment and submit 
+            </description><attendants>stud01</attendants></task><task status="not-executed" date="08-10-2012" name="approve mandatory assignment 01" id="assn-01-approve"><description>
+                Check mandatory assignment and approve. 
+            </description><attendants>ta01</attendants></task><task status="executed" date="17-09-2012" name="mandatory exercise 1" id="exer-01"><description>Do MDS Mandatory Exercise 1</description><attendants>hclk, olpr, bhas, phoegfeldt</attendants></task></tasks></cal>
