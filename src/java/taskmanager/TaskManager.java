@@ -3,8 +3,6 @@ package taskmanager;
 import exceptions.UnsupportedCommandException;
 import java.io.*;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.bind.*;
 import serialization.*;
 
@@ -93,7 +91,7 @@ public class TaskManager implements ITaskManager {
     }    
 
     @Override
-    public String fetch(Envelope envelope) {
+    public String get(Envelope envelope) {
         String result = "";
         try {
             if(envelope.command.equalsIgnoreCase("GET")) {
@@ -109,7 +107,7 @@ public class TaskManager implements ITaskManager {
     }
 
     @Override
-    public void alter(Envelope envelope) {        
+    public void set(Envelope envelope) {        
         if(envelope.command.equalsIgnoreCase("POST")) {
             post(envelope.data);
         } else if(envelope.command.equalsIgnoreCase("PUT")) {

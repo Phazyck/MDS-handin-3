@@ -10,12 +10,12 @@ public class Server extends Actor {
     private ITaskManager taskManager;
 
     public Server() throws Exception {
-        this("TaskManagerGroup");
+        this(new GroupManager());
     }
-
-    public Server(String clusterName) throws Exception {
+    
+    public Server(ITaskManager taskManager) throws Exception {
         super((new ServerSocket(7896)).accept());
-        this.taskManager = new GroupManager(clusterName);
+        this.taskManager = taskManager;
     }
 
     // Receive the next request.
@@ -43,9 +43,9 @@ public class Server extends Actor {
         try {
             Envelope envelope = new Envelope(command, data);
             if(command.equalsIgnoreCase("GET")) {
-                result = taskManager.fetch(envelope);
+                result = taskManager.get(envelope);
             } else {
-                taskManager.alter(envelope);
+                taskManager.set(envelope);
             }
         } catch (Exception e) {
             result = "Exception: " + e.getMessage();

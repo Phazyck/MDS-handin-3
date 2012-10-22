@@ -3,6 +3,6 @@ package taskmanager;
 import serialization.Envelope;
 
 public interface ITaskManager {
-    public String fetch(Envelope envelope);
-    public void alter (Envelope envelope);   
+    public String get(Envelope envelope);
+    public void set (Envelope envelope);   
 }

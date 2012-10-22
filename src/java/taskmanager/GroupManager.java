@@ -1,9 +1,6 @@
 package taskmanager;
 
 import java.io.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.xml.bind.JAXBException;
 import org.jgroups.JChannel;
 import org.jgroups.Message;
 import org.jgroups.ReceiverAdapter;
@@ -15,6 +12,10 @@ public class GroupManager extends ReceiverAdapter implements ITaskManager {
     private JChannel channel = null;
     private final TaskManager state = new TaskManager();
 
+    public GroupManager() throws Exception {
+        this("TheHitmen");
+    }
+    
     public GroupManager(String clusterName) throws Exception {
         try {
             channel = new JChannel();
@@ -59,7 +60,7 @@ public class GroupManager extends ReceiverAdapter implements ITaskManager {
             Envelope envelope = Envelope.deSerialize(xmlEnvelope);
 
             synchronized (state) {
-                alter(envelope);
+                set(envelope);
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -67,12 +68,12 @@ public class GroupManager extends ReceiverAdapter implements ITaskManager {
     }
 
     @Override
-    public String fetch(Envelope envelope) {
-        return state.fetch(envelope);
+    public String get(Envelope envelope) {
+        return state.get(envelope);
     }
 
     @Override
-    public void alter(Envelope envelope) {
+    public void set(Envelope envelope) {
         try {
             String message = Envelope.serialize(envelope);
             send(message);
