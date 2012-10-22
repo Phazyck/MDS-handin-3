@@ -5,8 +5,7 @@ import java.net.*;
 
 public abstract class Actor {
 
-    private InputStream i;
-    private OutputStream o;
+    private Socket s; 
 
     /**
      * Initialize the Actor on the given socket.
@@ -15,8 +14,7 @@ public abstract class Actor {
      * @throws IOException
      */
     public Actor(Socket socket) throws IOException {
-        this.i = socket.getInputStream();
-        this.o = socket.getOutputStream();
+        s = socket;
     }
 
     /**
@@ -26,6 +24,7 @@ public abstract class Actor {
      * @throws IOException
      */
     protected String receiveString() throws IOException {
+        InputStream i = s.getInputStream();
         DataInputStream in = new DataInputStream(i);
         return in.readUTF();
     }
@@ -37,6 +36,7 @@ public abstract class Actor {
      * @throws IOException
      */
     protected void sendString(String string) throws IOException {
+        OutputStream o = s.getOutputStream();
         DataOutputStream out = new DataOutputStream(o);
         out.writeUTF(string);
         out.flush();

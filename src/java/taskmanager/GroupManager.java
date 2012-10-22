@@ -8,6 +8,10 @@ import org.jgroups.util.Util;
 import serialization.*;
 
 public class GroupManager extends ReceiverAdapter implements ITaskManager {
+    
+    private static void print(String msg) {
+        System.out.println("GRPMGR: " + msg);
+    }
 
     private JChannel channel = null;
     private final TaskManager state = new TaskManager();
@@ -15,11 +19,13 @@ public class GroupManager extends ReceiverAdapter implements ITaskManager {
     public GroupManager() throws Exception {
         this("TheHitmen");
     }
-    
+
     public GroupManager(String clusterName) throws Exception {
         try {
             channel = new JChannel();
             channel.setReceiver(this);
+            channel.setDiscardOwnMessages(true); // in 3.0, previously use 
+            //channel.setOpt(Channel.LOCAL, false);   
             channel.connect(clusterName);
             channel.getState(null, 10000);
 
@@ -43,7 +49,7 @@ public class GroupManager extends ReceiverAdapter implements ITaskManager {
     @Override
     public void setState(InputStream input) throws Exception {
         String calXml = (String) Util.objectFromStream(new DataInputStream(input));
-        synchronized (state) {            
+        synchronized (state) {
             state.setCal(Cal.deSerialize(calXml));
         }
     }
@@ -54,16 +60,19 @@ public class GroupManager extends ReceiverAdapter implements ITaskManager {
     }
 
     @Override
-    public void receive(Message msg) {
+    public void receive(Message msg) {        
         try {
             String xmlEnvelope = msg.getObject().toString();
+            
             Envelope envelope = Envelope.deSerialize(xmlEnvelope);
 
+            print("DATA RECEIVED: " + envelope.data);
+
             synchronized (state) {
-                set(envelope);
+                state.set(envelope);
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            print(e.getMessage());
         }
     }
 
@@ -75,10 +84,12 @@ public class GroupManager extends ReceiverAdapter implements ITaskManager {
     @Override
     public void set(Envelope envelope) {
         try {
+            state.set(envelope);
+            print("DATA SENT: " + envelope.data);            
             String message = Envelope.serialize(envelope);
             send(message);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            print(e.getMessage());
         }
     }
 }

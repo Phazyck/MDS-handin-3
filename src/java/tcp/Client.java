@@ -5,6 +5,26 @@ import java.net.*;
 
 public class Client extends Actor {
 
+    public static void main(String[] args) throws Exception {
+        Thread.sleep(5000);
+        String postData = serialization.Task.serialize(new serialization.Task("test", "Update Me", "22-10-2012", "not-executed", "Update this task using update.", "TheHitmen"));
+        String putData = serialization.Task.serialize(new serialization.Task("test", "Delete Me", "22-10-2012", "executed", "Delete this task using delete.", "TheHitmen"));
+        String getData = "TheHitmen";
+        String deleteData = "test";
+        
+        Client client = new Client();
+        client.sendRequest("POST", postData);
+        print(client.sendRequest("GET", getData));
+        client.sendRequest("PUT", putData);
+        print(client.sendRequest("GET", getData));
+        client.sendRequest("DELETE", deleteData);
+        print(client.sendRequest("GET", getData));
+    }
+    
+    private static void print(String msg) {
+        System.out.println("CLIENT: " + msg);
+    }
+    
     /**
      * Initialize the Client with the host name "localhost".
      *
