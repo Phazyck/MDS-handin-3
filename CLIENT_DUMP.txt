@@ -1,0 +1,32 @@
+Request: [GET] [TheHitmen]
+Reply  : [<?xml version="1.0" encoding="UTF-8" standalone="yes"?><tasks><task id="test" name="Save me" date="22-10-2012" status="executed"><description>This task should be saved to .xml-file.</description><attendants>TheHitmen</attendants></task></tasks>] 
+
+Request: [DELETE] [test]
+Reply  : [Success!] 
+
+Request: [GET] [TheHitmen]
+Reply  : [<?xml version="1.0" encoding="UTF-8" standalone="yes"?><tasks/>] 
+
+Request: [POST] [<?xml version="1.0" encoding="UTF-8" standalone="yes"?><task id="test" name="Update Me" date="22-10-2012" status="not-executed"><description>Update this task using update.</description><attendants>TheHitmen</attendants></task>]
+Reply  : [Success!] 
+
+Request: [GET] [TheHitmen]
+Reply  : [<?xml version="1.0" encoding="UTF-8" standalone="yes"?><tasks><task id="test" name="Update Me" date="22-10-2012" status="not-executed"><description>Update this task using update.</description><attendants>TheHitmen</attendants></task></tasks>] 
+
+Request: [PUT] [<?xml version="1.0" encoding="UTF-8" standalone="yes"?><task id="test" name="Delete Me" date="22-10-2012" status="executed"><description>Delete this task using delete.</description><attendants>TheHitmen</attendants></task>]
+Reply  : [Success!] 
+
+Request: [GET] [TheHitmen]
+Reply  : [<?xml version="1.0" encoding="UTF-8" standalone="yes"?><tasks><task id="test" name="Delete Me" date="22-10-2012" status="executed"><description>Delete this task using delete.</description><attendants>TheHitmen</attendants></task></tasks>] 
+
+Request: [DELETE] [test]
+Reply  : [Success!] 
+
+Request: [GET] [TheHitmen]
+Reply  : [<?xml version="1.0" encoding="UTF-8" standalone="yes"?><tasks/>] 
+
+Request: [POST] [<?xml version="1.0" encoding="UTF-8" standalone="yes"?><task id="test" name="Save me" date="22-10-2012" status="executed"><description>This task should be saved to .xml-file.</description><attendants>TheHitmen</attendants></task>]
+Reply  : [Success!] 
+
+Request: [GET] [TheHitmen]
+Reply  : [<?xml version="1.0" encoding="UTF-8" standalone="yes"?><tasks><task id="test" name="Save me" date="22-10-2012" status="executed"><description>This task should be saved to .xml-file.</description><attendants>TheHitmen</attendants></task></tasks>] 

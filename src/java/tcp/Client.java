@@ -14,22 +14,17 @@ public class Client extends Actor {
         
         Client client = new Client();
         
-        System.out.println(client.sendRequest("GET", getData));
-        
-        client.sendRequest("DELETE", deleteData);
-        System.out.println(client.sendRequest("GET", getData));
-        
-        client.sendRequest("POST", postData);
-        System.out.println(client.sendRequest("GET", getData));
-        
-        client.sendRequest("PUT", putData);
-        System.out.println(client.sendRequest("GET", getData));
-        
-        client.sendRequest("DELETE", deleteData);
-        System.out.println(client.sendRequest("GET", getData));
-        
-        client.sendRequest("POST", saveData);
-        System.out.println(client.sendRequest("GET", getData));
+        client.printRequest("GET", getData);
+        client.printRequest("DELETE", deleteData);
+        client.printRequest("GET", getData);
+        client.printRequest("POST", postData);
+        client.printRequest("GET", getData);
+        client.printRequest("PUT", putData);
+        client.printRequest("GET", getData);
+        client.printRequest("DELETE", deleteData);
+        client.printRequest("GET", getData);
+        client.printRequest("POST", saveData);
+        client.printRequest("GET", getData);
     }    
     
     /**
@@ -47,6 +42,11 @@ public class Client extends Actor {
     public Client(String hostName) throws UnknownHostException, IOException {
         super(new Socket(InetAddress.getByName(hostName), 7896));
     }
+    
+    public void printRequest(String command, String data) throws IOException {
+        System.out.printf("Request: [%s] [%s]\n", command, data);
+        System.out.printf("Reply  : [%s] \n\n", sendRequest(command, data));        
+    }
 
     /**
      * Sends a request to the Server.
@@ -57,6 +57,7 @@ public class Client extends Actor {
      * @return The result of the interaction.
      */
     public String sendRequest(String command, String data) throws IOException {
+        
         // Send the command to the Server.
         sendString(command);
         // Receive the echo from the Server.

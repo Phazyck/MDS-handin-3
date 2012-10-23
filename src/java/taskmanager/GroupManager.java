@@ -62,6 +62,7 @@ public class GroupManager extends ReceiverAdapter implements TaskManager {
 
     @Override
     public String get(Envelope envelope) {
+        System.out.println("LOCAL          : [" + envelope.command + "] [" + envelope.data + "]");
         return state.get(envelope);
     }
 
