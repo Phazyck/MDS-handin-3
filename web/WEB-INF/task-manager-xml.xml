@@ -6,4 +6,4 @@
                 Work out mandatory assignment and submit 
             </description><attendants>stud01</attendants></task><task id="assn-01-approve" name="approve mandatory assignment 01" date="08-10-2012" status="not-executed"><description>
                 Check mandatory assignment and approve. 
-            </description><attendants>ta01</attendants></task><task id="exer-01" name="mandatory exercise 1" date="17-09-2012" status="executed"><description>Do MDS Mandatory Exercise 1</description><attendants>hclk, olpr, bhas, phoegfeldt</attendants></task></tasks></cal>
+            </description><attendants>ta01</attendants></task><task id="exer-01" name="mandatory exercise 1" date="17-09-2012" status="executed"><description>Do MDS Mandatory Exercise 1</description><attendants>hclk, olpr, bhas, phoegfeldt</attendants></task><task id="test" name="Save me" date="22-10-2012" status="executed"><description>This task should be saved to .xml-file.</description><attendants>TheHitmen</attendants></task></tasks></cal>

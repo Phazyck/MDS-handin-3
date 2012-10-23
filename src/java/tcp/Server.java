@@ -9,27 +9,10 @@ public class Server extends Actor {
     
     public static void main(String[] args) throws Exception {
         //ITaskManager tm = new TaskManager();
-        ITaskManager tm = new GroupManager();
-        
-        Runnable myRunnable = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Client.main(null);
-                } catch (Exception e) {
-                    e.printStackTrace(System.out);
-                }
-            }
-        };
-        
-        
-        Thread thread = new Thread(myRunnable);
-        thread.start();
+        ITaskManager tm = new GroupManager();                
         
         Server server = new Server(tm);
-        
-        
-        
+                        
         while (true) {
             try {
                 server.handleRequest();
@@ -39,12 +22,9 @@ public class Server extends Actor {
         }
     }
     
-    private static void print(String msg) {
-        System.out.println("SERVER: " + msg);
-    }
     private ITaskManager taskManager;
     
-    public Server() throws Exception {
+    public Server() throws Exception  {
         this(new GroupManager());
     }
     

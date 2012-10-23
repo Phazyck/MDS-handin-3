@@ -1,43 +1,39 @@
 package taskmanager;
 
-import exceptions.UnsupportedCommandException;
 import java.io.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.bind.*;
 import serialization.*;
 
 public class TaskManager implements ITaskManager {
 
-    public static void main(String[] args) throws Exception {                
+    public static void main(String[] args) throws Exception {
         String postData = Task.serialize(new Task("test", "Update Me", "22-10-2012", "not-executed", "Update this task using update.", "TheHitmen"));
         String putData = Task.serialize(new Task("test", "Delete Me", "22-10-2012", "executed", "Delete this task using delete.", "TheHitmen"));
         String getData = "TheHitmen";
         String deleteData = "test";
-        
+
         Envelope postEnvelope = new Envelope("POST", postData);
         Envelope putEnvelope = new Envelope("PUT", putData);
         Envelope getEnvelope = new Envelope("GET", getData);
-        Envelope deleteEnvelope = new Envelope("DELETE", deleteData);       
-        
+        Envelope deleteEnvelope = new Envelope("DELETE", deleteData);
+
         TaskManager tm = new TaskManager();
-        print(Cal.serialize(tm.getCal()));        
+        System.out.println(Cal.serialize(tm.getCal()));
         tm.set(postEnvelope);
-        
+
         tm = new TaskManager();
-        print(tm.get(getEnvelope));
-        
-        print(Cal.serialize(tm.getCal()));        
-        
+        System.out.println(tm.get(getEnvelope));
+
+        System.out.println(Cal.serialize(tm.getCal()));
+
         tm.set(putEnvelope);
-        print(tm.get(getEnvelope));
+        System.out.println(tm.get(getEnvelope));
         tm.set(deleteEnvelope);
-        print(tm.get(getEnvelope));
-    }       
-    
-    public static void print(String msg) {
-        System.out.println("TSKMGR: " + msg);
+        System.out.println(tm.get(getEnvelope));
     }
-    
     private Cal cal;
     private String path;
 
@@ -47,13 +43,17 @@ public class TaskManager implements ITaskManager {
 
     public TaskManager(String path) {
         this.path = path;
-        try {
+        cal = null;
+        try (FileInputStream stream = new FileInputStream(path)) {
             JAXBContext context = JAXBContext.newInstance(Cal.class);
-            FileInputStream stream = new FileInputStream(path);
             cal = (Cal) context.createUnmarshaller().unmarshal(stream);
-        } catch (Exception e) {
-            e.printStackTrace();
-            cal = new Cal();
+
+        } catch (JAXBException | IOException ex) {
+            Logger.getLogger(TaskManager.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            if (cal == null) {
+                cal = new Cal();
+            }
         }
     }
 
@@ -66,27 +66,18 @@ public class TaskManager implements ITaskManager {
         saveToFile();
     }
 
-    private void post(String taskXml) {
-        try {
-            Task task = Task.deSerialize(taskXml);
-            cal.tasks.add(task);
-        } catch (Exception e) {
-            print(e.getMessage());
-        }
+    private void post(String taskXml) throws JAXBException {
+        cal.tasks.add(Task.deSerialize(taskXml));
     }
 
-    private void put(String taskXml) {        
-        try {
-            Task task = Task.deSerialize(taskXml);
-            delete(task.id);
-            post(taskXml);
-        } catch (Exception e) {
-            e.printStackTrace(System.out);
-        }
+    private void put(String taskXml) throws JAXBException {
+        Task task = Task.deSerialize(taskXml);
+        delete(task.id);
+        post(taskXml);
     }
 
-    private String get(String attendantId) throws Exception {
-        List<Task> matches = new ArrayList<Task>();
+    private String get(String attendantId) throws JAXBException {
+        List<Task> matches = new ArrayList<>();
 
         for (Task t : cal.tasks) {
             if (t.attendants.contains(attendantId)) {
@@ -94,11 +85,11 @@ public class TaskManager implements ITaskManager {
             }
         }
 
-        return Tasks.serialize(new Tasks(matches));        
+        return Tasks.serialize(new Tasks(matches));
     }
 
     private void delete(String taskId) {
-        List<Task> matches = new ArrayList<Task>();
+        List<Task> matches = new ArrayList<>();
 
         for (Task t : cal.tasks) {
             if (t.id.equals(taskId)) {
@@ -112,50 +103,42 @@ public class TaskManager implements ITaskManager {
     }
 
     private void saveToFile() {
-        BufferedWriter output = null;
-        try {
-            File file = new File(path);
-            output = new BufferedWriter(new FileWriter(file));
-            String xmlCal = Cal.serialize(cal);
-            output.write(xmlCal);
-        } catch (Exception e) {
-            print(e.getMessage());
-        } finally {
-            try {
-                output.close();
-            } catch (Exception e) {
-                print(e.getMessage());
-            }
-        }
-        
-    }    
-
-    @Override
-    public String get(Envelope envelope) {             
-        String result = "";
-        try {
-            if(envelope.command.equalsIgnoreCase("GET")) {
-                result = get(envelope.data);
-            } else {
-                throw new UnsupportedCommandException(envelope.command);
-            }
-        } catch (Exception e) {
-            result = e.getMessage();
-        } finally {
-            return result;
+        try (BufferedWriter output = new BufferedWriter(new FileWriter(new File(path)))) {
+            output.write(Cal.serialize(cal));
+        } catch (JAXBException | IOException ex) {
+            Logger.getLogger(TaskManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     @Override
-    public void set(Envelope envelope) {        
-        if(envelope.command.equalsIgnoreCase("POST")) {
-            post(envelope.data);
-        } else if(envelope.command.equalsIgnoreCase("PUT")) {
-            put(envelope.data);
-        } else if(envelope.command.equalsIgnoreCase("DELETE")) {
-            delete(envelope.data);
+    public String get(Envelope envelope) {
+        try {
+            if (envelope.command.equalsIgnoreCase("GET")) {
+                return get(envelope.data);
+            } else {
+                throw new NoSuchMethodException(envelope.command);
+            }
+        } catch (NoSuchMethodException | JAXBException ex) {
+            return ex.toString();
         }
-               
+    }
+
+    @Override
+    public void set(Envelope envelope) {
+        try {
+            if (envelope.command.equalsIgnoreCase("POST")) {
+                post(envelope.data);
+            } else if (envelope.command.equalsIgnoreCase("PUT")) {
+                put(envelope.data);
+            } else if (envelope.command.equalsIgnoreCase("DELETE")) {
+                delete(envelope.data);
+            } else {
+                throw new NoSuchMethodException(envelope.command);
+            }
+        } catch (JAXBException | NoSuchMethodException ex) {
+            Logger.getLogger(TaskManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         saveToFile();
     }
 }

@@ -1,17 +1,12 @@
 package taskmanager;
 
 import java.io.*;
-import org.jgroups.JChannel;
-import org.jgroups.Message;
-import org.jgroups.ReceiverAdapter;
+import javax.xml.bind.JAXBException;
+import org.jgroups.*;
 import org.jgroups.util.Util;
 import serialization.*;
 
 public class GroupManager extends ReceiverAdapter implements ITaskManager {
-    
-    private static void print(String msg) {
-        System.out.println("GRPMGR: " + msg);
-    }
 
     private JChannel channel = null;
     private final TaskManager state = new TaskManager();
@@ -21,24 +16,15 @@ public class GroupManager extends ReceiverAdapter implements ITaskManager {
     }
 
     public GroupManager(String clusterName) throws Exception {
-        try {
-            channel = new JChannel();
-            channel.setReceiver(this);
-            channel.setDiscardOwnMessages(true); // in 3.0, previously use 
-            //channel.setOpt(Channel.LOCAL, false);   
-            channel.connect(clusterName);
-            channel.getState(null, 10000);
-
-        } catch (Exception e) {
-            if (channel != null) {
-                channel.close();
-            }
-            throw e;
-        }
+        channel = new JChannel();
+        channel.setReceiver(this);
+        channel.setDiscardOwnMessages(true);
+        channel.connect(clusterName);
+        channel.getState(null, 10000);        
     }
 
     @Override
-    public void getState(OutputStream output) throws Exception {
+    public void getState(OutputStream output) throws JAXBException, Exception {
         synchronized (state) {
             String calXml = Cal.serialize(state.getCal());
 
@@ -47,7 +33,7 @@ public class GroupManager extends ReceiverAdapter implements ITaskManager {
     }
 
     @Override
-    public void setState(InputStream input) throws Exception {
+    public void setState(InputStream input) throws JAXBException, Exception {
         String calXml = (String) Util.objectFromStream(new DataInputStream(input));
         synchronized (state) {
             state.setCal(Cal.deSerialize(calXml));
@@ -60,20 +46,18 @@ public class GroupManager extends ReceiverAdapter implements ITaskManager {
     }
 
     @Override
-    public void receive(Message msg) {        
+    public void receive(Message msg) {
         try {
             String xmlEnvelope = msg.getObject().toString();
-            
             Envelope envelope = Envelope.deSerialize(xmlEnvelope);
-
-            print("DATA RECEIVED: " + envelope.data);
-
             synchronized (state) {
                 state.set(envelope);
             }
-        } catch (Exception e) {
-            print(e.getMessage());
+            System.out.println("LOCAL <- GROUP : [" + envelope.command + "] [" + envelope.data + "]");
+        } catch (JAXBException ex) {
+            System.out.println("EXCEPTION : " + ex.getMessage());
         }
+
     }
 
     @Override
@@ -83,13 +67,16 @@ public class GroupManager extends ReceiverAdapter implements ITaskManager {
 
     @Override
     public void set(Envelope envelope) {
-        try {
+        synchronized (state) {
             state.set(envelope);
-            print("DATA SENT: " + envelope.data);            
+        }
+
+        try {
             String message = Envelope.serialize(envelope);
             send(message);
-        } catch (Exception e) {
-            print(e.getMessage());
+            System.out.println("LOCAL -> GROUP : [" + envelope.command + "] [" + envelope.data + "]");
+        } catch (Exception ex) {
+            System.out.println("EXCEPTION : " + ex.getMessage());
         }
     }
 }

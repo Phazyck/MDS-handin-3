@@ -6,30 +6,34 @@ import java.net.*;
 public class Client extends Actor {
 
     public static void main(String[] args) throws Exception {
-        Thread.sleep(5000);
         String postData = serialization.Task.serialize(new serialization.Task("test", "Update Me", "22-10-2012", "not-executed", "Update this task using update.", "TheHitmen"));
         String putData = serialization.Task.serialize(new serialization.Task("test", "Delete Me", "22-10-2012", "executed", "Delete this task using delete.", "TheHitmen"));
+        String saveData = serialization.Task.serialize(new serialization.Task("test", "Save me", "22-10-2012", "executed", "This task should be saved to .xml-file.", "TheHitmen"));
         String getData = "TheHitmen";
         String deleteData = "test";
         
         Client client = new Client();
-        client.sendRequest("POST", postData);
-        print(client.sendRequest("GET", getData));
-        client.sendRequest("PUT", putData);
-        print(client.sendRequest("GET", getData));
+        
+        System.out.println(client.sendRequest("GET", getData));
+        
         client.sendRequest("DELETE", deleteData);
-        print(client.sendRequest("GET", getData));
-    }
-    
-    private static void print(String msg) {
-        System.out.println("CLIENT: " + msg);
-    }
+        System.out.println(client.sendRequest("GET", getData));
+        
+        client.sendRequest("POST", postData);
+        System.out.println(client.sendRequest("GET", getData));
+        
+        client.sendRequest("PUT", putData);
+        System.out.println(client.sendRequest("GET", getData));
+        
+        client.sendRequest("DELETE", deleteData);
+        System.out.println(client.sendRequest("GET", getData));
+        
+        client.sendRequest("POST", saveData);
+        System.out.println(client.sendRequest("GET", getData));
+    }    
     
     /**
      * Initialize the Client with the host name "localhost".
-     *
-     * @throws UnknownHostException
-     * @throws IOException
      */
     public Client() throws UnknownHostException, IOException {
         this("localhost");
@@ -39,8 +43,6 @@ public class Client extends Actor {
      * Initialize the Client with a custom host name.
      *
      * @param hostName The custom host name.
-     * @throws UnknownHostException
-     * @throws IOException
      */
     public Client(String hostName) throws UnknownHostException, IOException {
         super(new Socket(InetAddress.getByName(hostName), 7896));
@@ -53,7 +55,6 @@ public class Client extends Actor {
      * the server.
      * @param data The data which is needed to execute the command.
      * @return The result of the interaction.
-     * @throws IOException
      */
     public String sendRequest(String command, String data) throws IOException {
         // Send the command to the Server.
