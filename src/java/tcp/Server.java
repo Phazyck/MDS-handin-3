@@ -9,7 +9,7 @@ public class Server extends Actor {
     
     public static void main(String[] args) throws Exception {
         //ITaskManager tm = new TaskManager();
-        ITaskManager tm = new GroupManager();                
+        TaskManager tm = new GroupManager();                
         
         Server server = new Server(tm);
                         
@@ -22,13 +22,13 @@ public class Server extends Actor {
         }
     }
     
-    private ITaskManager taskManager;
+    private TaskManager taskManager;
     
     public Server() throws Exception  {
         this(new GroupManager());
     }
     
-    public Server(ITaskManager taskManager) throws Exception {
+    public Server(TaskManager taskManager) throws Exception {
         super((new ServerSocket(7896)).accept());
         this.taskManager = taskManager;
     }

@@ -1,40 +1,53 @@
-TODO:
+********************************************************************************
+    Overview
+********************************************************************************
+This project contains 11 classes, divided into three packages:
 
-=JGroupClient=
-This class will handle all JGroup business.
+serialization
+=============
+This package contains the following classes:
 
-JGroupClient should supply whatever the TcpServer needs.
-In other words, we still need to figure out how we want this guy and the TcpServer to play together.
+ - Cal, Tasks, Task, User, Envelope
+ These classes represent XML-data, and are capable 
+ of serializing/deserializing themselves.
 
-=TcpServer=
+taskmanager
+===========
+ This package contains the following classes:
+    
+ - TaskManager
+ An interface which another class must implement 
+ to fulfill the role of a TaskManager.
 
-The TcpServer should have the following constructor:
- TcpServer(String xmlPath)
-  - The path to the XML file which it will read/write from/to in the same manner the CalSerializer used to.
+ - FileManager
+ A TaskManager that manages it's tasks through the use of a local xml-file.
 
-This way, any TcpServer can manage its own XML database.
-The TcpServer should use the JGroup client to connect to and communicate with a group.
+ - GroupManager
+ A TaskManager that acts as a proxy for the FileManager.
+ By joining a JGroup with other GroupManagers, it keeps its 
+ FileManager's state synchronized with the other members' FileManagers.
 
+tcp
+===
+This package contains the following classes:
 
-DONE:
+ - Actor
+ An abstract class which, if extended upon provides basic methods
+ for communication using Strings via TCP.
 
-=Serializer=
-Changes:
- - Turned into an all-purpose generic serializer.
+ - Server
+ Acts as a TCP Server for the supplied TaskManager.
 
-=TcpClient=
-Changes:
- - Can now take input through terminal. No more hardcoding! =D
- - Documented.
- - Other minor changes.
+ - Client
+ Acts as a TCP Client to test out the Server.
 
-=Cal=
-No need to edit.
+********************************************************************************
+    Execution
+********************************************************************************
 
-=Task=
-No need to edit.
+In order to execute and test this project, you should do the following.
 
-=User=
-No need to edit.
-
-
+1. Run Server.java.
+2. Wait half a minute to make sure the Server is ready for a client.
+3. Run Client.java.
+4. You should now see some results in the terminal.

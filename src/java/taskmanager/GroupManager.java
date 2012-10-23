@@ -6,10 +6,10 @@ import org.jgroups.*;
 import org.jgroups.util.Util;
 import serialization.*;
 
-public class GroupManager extends ReceiverAdapter implements ITaskManager {
+public class GroupManager extends ReceiverAdapter implements TaskManager {
 
     private JChannel channel = null;
-    private final TaskManager state = new TaskManager();
+    private final FileManager state = new FileManager();
 
     public GroupManager() throws Exception {
         this("TheHitmen");
